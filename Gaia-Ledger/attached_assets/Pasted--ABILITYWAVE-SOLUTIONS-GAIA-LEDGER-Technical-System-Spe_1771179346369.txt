@@ -1,0 +1,405 @@
+🌱 ABILITYWAVE SOLUTIONS: GAIA LEDGER
+Technical System Specification (Replit Stack Version)
+
+Version: 2.0
+Stack: Express + Drizzle ORM + PostgreSQL + React (Vite)
+UI: Tailwind CSS + shadcn/ui
+Language: TypeScript (end-to-end type safety)
+
+1. CORE ARCHITECTURE
+Backend
+
+Express server
+
+Drizzle ORM
+
+PostgreSQL
+
+RESTful API routes
+
+Centralized error handling
+
+Unique CropSheet name remediation logic
+
+Frontend
+
+React (Vite)
+
+Tailwind CSS
+
+shadcn/ui components
+
+Shared TypeScript interfaces with backend
+
+Modular dashboard layout
+
+Shared Types
+
+Fully typed DTOs
+
+Strict type alignment between database schema and frontend state
+
+No “any” leakage
+
+2. DATABASE & DATA MODEL
+Implemented Core Entities
+
+CropSheet
+
+Row
+
+Plant
+
+HealthStatusType
+
+HealthCurrent
+
+HealthHistory
+
+Remediation Fix Included
+
+CropSheet names enforced as unique
+
+HealthStatusType uses internal unique name + displayName
+
+Avoids collision across crop cycles
+
+Seed Data
+
+Default CropSheet: “Spring 2026”
+
+5 Rows: A–E
+
+10 initial Plants in Row A
+
+3. FUNCTIONAL FEATURES
+Dashboard
+
+Tabbed layout:
+
+Field Map
+
+Units
+
+Rows
+
+Crop Sheets
+
+Each tab loads via controlled state, not full reload.
+
+Field Map (Visual Grid)
+
+Grid layout grouped by Row
+
+Plants rendered as fixed-size square cells
+
+Health status color-coded
+
+Legend included
+
+Clickable plants for detail modal
+
+Health Color Mapping
+
+Must use database-defined color field
+Do NOT hardcode Tailwind color classes.
+
+Color applied dynamically:
+
+style={{ backgroundColor: plant.currentHealth?.status.color }}
+
+
+This allows user customization.
+
+Plant Management
+
+Create plant
+
+Automatic code generation (Row Letter + Number)
+
+Edit plant
+
+Delete plant
+
+Assign crop sheet
+
+Assign health status
+
+Log inspection notes
+
+Validation:
+
+No negative numeric attributes
+
+Row must exist
+
+Crop sheet must exist
+
+Health Tracking
+Current Status
+
+One active health status per plant
+
+History
+
+Each change logs:
+
+statusId
+
+notes
+
+timestamp
+
+Required Improvement
+
+Health history must support:
+
+Time-series graph generation
+
+Per-crop aggregation
+
+4. REQUIRED ADDITIONS (From Previous Requests)
+
+These were requested earlier and must now be explicitly included.
+
+A. Per-Crop History Tracking Graphs
+
+Each CropSheet must:
+
+Have independent historical aggregation
+
+Generate its own graph instance
+
+Persist data independently
+
+Not share state with other crop sheets
+
+Backend Requirement
+
+Endpoint:
+
+GET /api/crop-sheets/:id/health-history
+
+
+Query:
+
+Filter by cropSheetId
+
+Group by date
+
+Return aggregated health counts
+
+Frontend Requirement
+
+Each CropSheet page must:
+
+Render dynamic graph
+
+Allow metric selection (Health Status count, leaf count, etc.)
+
+Allow filtering by date range
+
+B. Dynamic Graph Creation Per Crop Sheet
+
+When:
+
+A new CropSheet is created
+
+System must:
+
+Automatically enable graph tracking
+
+No shared graph instance
+
+Separate dataset per sheet
+
+Graph component must accept:
+
+cropSheetId as prop
+
+
+Never use global graph state.
+
+C. Health Status Customization
+
+Users must be able to:
+
+Edit displayName
+
+Change color (color picker)
+
+Create new health statuses per crop
+
+Delete unused health statuses
+
+Backend:
+
+Update color field in database
+
+Persist changes immediately
+
+Frontend:
+
+Live UI update after change
+
+No refresh required
+
+D. Expanded Agricultural Data Points
+
+Each plant must support dynamic attribute system.
+
+Minimum suggested default attributes:
+
+Leaf count (Number)
+
+Plant height (Number)
+
+Soil moisture (Number or text)
+
+Pest presence (Boolean)
+
+Disease notes (Text)
+
+Fertilizer type (Text)
+
+Irrigation frequency (Text)
+
+Growth stage (Text)
+
+Inspection date (Date)
+
+These must:
+
+Be stored via Attribute + PlantAttributeCurrent
+
+Log changes in PlantAttributeHistory
+
+Support graphing if numeric
+
+E. UI Fix: Transparent Background Removal
+
+All dropdown menus, dialogs, and selectable components must:
+
+Have solid background color
+
+Use consistent Tailwind surface class
+
+Maintain accessibility contrast
+
+Avoid transparent overlay bleed
+
+5. STYLING & UX REQUIREMENTS
+
+Theme:
+
+Agricultural green palette
+
+Health status visual mapping:
+
+Healthy → Green
+
+Dehydrated → Yellow
+
+Fungus → Dark amber
+
+Pest → Red
+
+Nutrient → Orange
+
+Not Checked → Gray
+
+But actual color comes from database, not hardcoded classes.
+
+Responsive:
+
+Works on tablet (field device)
+
+Touch-friendly interaction zones
+
+No tiny click targets
+
+6. DATA INTEGRITY REQUIREMENTS
+
+Must ensure:
+
+Plant deletion cascades to history
+
+CropSheet deletion cascades to statuses
+
+No orphan rows
+
+No duplicate plant codes
+
+Unique constraint enforcement at database layer
+
+Backend validation before write
+
+7. PERFORMANCE & SCALING NOTES
+
+PostgreSQL allows:
+
+Multi-user support
+
+Concurrent editing
+
+Future SaaS deployment
+
+Recommended next step:
+
+Add indexing on:
+
+cropSheetId
+
+plantId
+
+checkedAt
+
+updatedAt
+
+8. OPTIONAL BUT STRONGLY RECOMMENDED
+
+Add optimistic UI updates
+
+Add loading skeletons
+
+Add global error boundary
+
+Add audit log table for admin tracking
+
+Add CSV export per crop sheet
+
+Add JSON backup endpoint
+
+9. FINAL STRUCTURED SUMMARY
+
+The Gaia Ledger application now includes:
+
+Express backend with Drizzle ORM
+
+PostgreSQL relational integrity
+
+Full crop isolation
+
+Visual field mapping
+
+Health history tracking
+
+CRUD for plants, rows, crop sheets
+
+Seeded example data
+
+Professional agricultural UI theme
+
+Remaining critical enhancements:
+
+Per-crop graph visualization
+
+Dynamic graph creation
+
+Health color customization UI
+
+Expanded plant attribute system
+
+Remove hardcoded health color logic
+
+Ensure no transparent UI elements

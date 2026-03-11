@@ -1,0 +1,418 @@
+🌱 ABILITYWAVE SOLUTIONS: GAIA LEDGER
+Enhancement Specification – Crop Sheet Expansion Module
+
+Version 2.1
+
+1️⃣ CROP SHEET GRID SYSTEM (Independent of Field Map)
+Objective
+
+Each Crop Sheet must include its own grid-based visual system, similar to the existing Field Map, but:
+
+Filtered strictly by cropSheetId
+
+Independent from the global field view
+
+Supporting its own metrics, overlays, and analytics
+
+Implementation Requirements
+Backend
+
+Endpoint:
+
+GET /api/crop-sheets/:id/grid
+
+
+Returns:
+
+Rows
+
+Plants filtered by cropSheetId
+
+Current health status
+
+Attribute summaries
+
+Frontend
+
+New Tab inside Crop Sheet View:
+
+Tabs:
+
+Overview
+
+Grid View
+
+Analytics
+
+Export
+
+Attributes
+
+Grid View Behavior
+
+Render rows horizontally
+
+Render plants as fixed-size 64x64 cells
+
+Background color = dynamic from DB (health status color)
+
+On hover/click → show:
+
+Plant Code
+
+Current Health
+
+Last Inspection Date
+
+Key attributes (leaf count, height, etc.)
+
+No global state leakage.
+Must accept cropSheetId as prop.
+
+2️⃣ ANALYTICS: GRAPH SYSTEM (MANDATORY ADDITION)
+
+You correctly noticed: graphs were described but not implemented.
+
+Now we define them clearly.
+
+Graph Engine Requirements
+
+Each Crop Sheet must have:
+
+Independent analytics view
+
+Time-series graphs
+
+Data pulled from:
+
+HealthHistory
+
+PlantAttributeHistory
+
+Backend Analytics Endpoints
+Health Timeline
+GET /api/crop-sheets/:id/analytics/health
+
+
+Returns:
+
+Date (local time normalized)
+
+Count per status per day
+
+Attribute Timeline
+GET /api/crop-sheets/:id/analytics/attributes/:attributeId
+
+
+Returns:
+
+Date
+
+Average value
+
+Min
+
+Max
+
+Frontend Graph Requirements
+
+Use:
+
+Recharts or Chart.js
+
+Must include:
+
+Line chart for time progression
+
+X-axis: Date (local device time)
+
+Y-axis: Count or numeric value
+
+Filter options:
+
+Last 7 days
+
+Last 30 days
+
+Full season
+
+Custom range
+
+Each Crop Sheet:
+
+Generates its own graph instance
+
+No shared analytics state
+
+3️⃣ LOCAL DEVICE TIME ENFORCEMENT
+
+This is important.
+
+All timestamps must:
+
+Be recorded server-side in UTC
+
+Converted on frontend to local device time using:
+
+new Date(timestamp).toLocaleString()
+
+
+Inspection logs must show:
+
+Date
+
+Time
+
+Timezone-adjusted
+
+Graph axis must reflect:
+
+Local device timezone
+
+Never trust client for timestamp writes — always write server timestamp.
+
+4️⃣ EXCEL EXPORT SYSTEM (ALL CROP SHEETS)
+Objective
+
+User must be able to download:
+
+All crop sheets
+
+Or single crop sheet
+
+Structured, clean, readable spreadsheet
+
+Backend Endpoint
+GET /api/export/crop-sheets/:id
+
+
+or
+
+GET /api/export/all
+
+Format Requirements
+
+Excel file (.xlsx)
+
+Structured sheets:
+
+Sheet 1: Crop Overview
+
+Crop Sheet Name
+
+Description
+
+Created At
+
+Total Plants
+
+Total Rows
+
+Sheet 2: Plant Data
+
+Columns:
+
+Plant Code
+
+Row
+
+Crop Sheet
+
+Current Health
+
+Last Inspection Date
+
+Notes
+
+Sheet 3: Health History
+
+Columns:
+
+Plant Code
+
+Status
+
+Notes
+
+Date
+
+Time
+
+Sheet 4: Attributes
+
+Columns:
+
+Plant Code
+
+Attribute Name
+
+Current Value
+
+Last Updated
+
+Formatting Requirements:
+
+Bold headers
+
+Column auto-width
+
+Date formatted properly
+
+No raw JSON
+
+Clean human-readable text
+
+Text-based only (as requested)
+No embedded charts needed.
+
+Recommended library:
+
+ExcelJS (Node)
+
+Or xlsx
+
+5️⃣ CUSTOM ATTRIBUTE SYSTEM (USER-DEFINED)
+
+This expands your inspection engine.
+
+Attribute Types
+
+When creating attribute:
+
+User must choose:
+
+Text
+
+Number
+
+Percentage
+
+Boolean
+
+Date
+
+Database Requirements
+
+Attribute table must include:
+
+type: 'text' | 'number' | 'percentage' | 'boolean' | 'date'
+cropSheetId (optional if per crop)
+
+Input Validation
+
+If:
+
+Number → numeric only
+
+Percentage → 0–100 enforced
+
+Boolean → true/false
+
+Date → ISO validated
+
+Graph Eligibility
+
+Only:
+
+Number
+
+Percentage
+
+Should be graphable.
+
+Text and boolean:
+
+Loggable
+
+Not plotted
+
+6️⃣ UI ADDITIONS
+
+Crop Sheet View Must Now Include:
+
+Tabs:
+
+Overview
+
+Grid
+
+Analytics
+
+Attributes
+
+Export
+
+Attribute Management Panel
+
+User can:
+
+Create new attribute
+
+Select type
+
+Assign to crop sheet
+
+Delete attribute
+
+Rename attribute
+
+Analytics Panel
+
+Dropdown:
+
+Select metric
+
+Select date range
+
+Select aggregation (average, count)
+
+7️⃣ DATA INTEGRITY RULES
+
+Must ensure:
+
+Deleting Crop Sheet deletes:
+
+Health statuses
+
+Plant associations
+
+Attribute associations
+
+History logs
+
+Export cannot run if dataset empty
+
+Prevent negative values
+
+Prevent invalid percentage values
+
+No duplicate attribute names per crop sheet
+
+8️⃣ PERFORMANCE CONSIDERATIONS
+
+Add indexes on:
+
+cropSheetId
+
+plantId
+
+checkedAt
+
+updatedAt
+
+attributeId
+
+For analytics queries.
+
+9️⃣ FINAL SYSTEM STATE AFTER ENHANCEMENT
+
+Gaia Ledger now includes:
+
+✔ Crop-specific grid system
+✔ Time-series analytics
+✔ Local timezone-aware logging
+✔ Full Excel export capability
+✔ Dynamic user-defined inspection attributes
+✔ Proper validation enforcement
+✔ Crop-isolated analytics
+✔ Clean structured spreadsheet output
