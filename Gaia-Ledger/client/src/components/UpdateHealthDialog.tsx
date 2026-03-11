@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Activity } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { PlantWithDetails } from "@shared/schema";
+import { PlantWithDetails, HealthStatusType } from "@shared/schema";
 
 interface UpdateHealthDialogProps {
   plant: PlantWithDetails | null;
@@ -94,7 +94,7 @@ export function UpdateHealthDialog({ plant, open, onOpenChange }: UpdateHealthDi
                     </FormControl>
                     <SelectContent>
                       {availableStatuses.length > 0 ? (
-                        availableStatuses.map((status) => (
+                        availableStatuses.map((status: HealthStatusType) => (
                           <SelectItem key={status.id} value={status.id.toString()}>
                             <div className="flex items-center gap-2">
                               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: status.color }} />

@@ -22,7 +22,7 @@ import { CreateRowDialog } from "@/components/CreateRowDialog";
 import { CreateCropSheetDialog } from "@/components/CreateCropSheetDialog";
 import { UpdateHealthDialog } from "@/components/UpdateHealthDialog";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { PlantWithDetails } from "@shared/schema";
+import { PlantWithDetails, Row } from "@shared/schema";
 import { format } from "date-fns";
 
 export default function Home() {
@@ -141,7 +141,7 @@ export default function Home() {
 
               {/* Map Grid */}
               <div className="lg:col-span-3 space-y-6">
-                {rows?.map((row) => (
+                {rows?.map((row: Row) => (
                   <div key={row.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">

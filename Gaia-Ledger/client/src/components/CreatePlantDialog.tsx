@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertPlantSchema, InsertPlant } from "@shared/schema";
+import { insertPlantSchema, InsertPlant, Row } from "@shared/schema";
 import { useCreatePlant, useRows, useCropSheets } from "@/hooks/use-gaia";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ export function CreatePlantDialog() {
 
   const onSubmit = (data: InsertPlant) => {
     // Generate code: {RowLetter}{Number}
-    const selectedRow = rows?.find(r => r.id === data.rowId);
+    const selectedRow = rows?.find((r: Row) => r.id === data.rowId);
     if (!selectedRow) {
       toast({ title: "Error", description: "Please select a valid row", variant: "destructive" });
       return;
@@ -85,7 +85,7 @@ export function CreatePlantDialog() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {rows?.map((row) => (
+                        {rows?.map((row: Row) => (
                           <SelectItem key={row.id} value={row.id.toString()}>
                             Row {row.letter}
                           </SelectItem>
